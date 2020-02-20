@@ -20,7 +20,8 @@ library(tidyverse)
 library(spotifyr)
 source('spotify.R')
 
-get_playlist_audio_features('konrad.mikalauskas', '6m7Y65yFBztma60lvg1DMN')
+playlist_tea = get_playlist_audio_features('konrad.mikalauskas', '6m7Y65yFBztma60lvg1DMN')
+playlist_tea
 ```
 
     ## # A tibble: 18 x 61
