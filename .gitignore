@@ -39,4 +39,4 @@ vignettes/*.pdf
 .Renviron
 
 # Spotify stuff
-spotify.r
+spotify.R
