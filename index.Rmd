@@ -1,0 +1,69 @@
+---
+title: "The Data Science of Everyday Music Listening"
+author: "Prince"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+#other libraries
+```
+
+Sidebar {.sidebar}
+===
+
+Either the abstract or discussion of our study.
+
+Results
+===
+
+Column {data-width=1}
+---
+
+### Scatterplot: Musical Sophistication and Musical Valence Estimation {data-height=800}
+
+```{r}
+
+```
+
+### Raw data
+
+```{r}
+
+```
+
+Column {data-width=1}
+---
+
+### Experiment demo
+
+
+
+### Outlier and unusual findings {data-height=800}
+
+```{r}
+
+```
+
+Research report
+===
+
+Column {data-width=585}
+---
+
+### Introduction
+
+### Discussion 
+
+Column {.tabset}
+---
+
+### Materials
+
+### Song selection
+
+### Procedure
+
