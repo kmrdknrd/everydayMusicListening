@@ -15,7 +15,7 @@ library(flexdashboard)
 Sidebar {.sidebar}
 ===
 
-Either the abstract or discussion of our study.
+Study abstract.
 
 Results
 ===
