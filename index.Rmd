@@ -38,11 +38,11 @@ Column {data-width=1}
 Column {data-width=1}
 ---
 
-### Experiment demo
+### Experiment: Demo
 
 
 
-### Outlier and unusual findings {data-height=800}
+### Outliers and unusual findings {data-height=800}
 
 ```{r}
 
