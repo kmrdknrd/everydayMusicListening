@@ -5,11 +5,14 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+    theme: cosmo
 ---
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
-#other libraries
+#library(ggplot2)
+#library(plotly)
+#library(DT)
 ```
 
 Sidebar {.sidebar}
@@ -28,18 +31,22 @@ Column {data-width=1}
 ```{r}
 
 ```
+This window will contain a scatterplot showing the relationship between people's scores on the MSI and their scores on the valence estimation measure. Readers will also be able to view the same relationship controled for each genre, e. g., what would the scatterplot look like if only electronic songs were used in the study?
 
 ### Raw data
 
 ```{r}
 
 ```
+This window will contain the raw data of each participant.
 
 Column {data-width=1}
 ---
 
 ### Experiment: Demo
 
+This window will contain a demonstration of the survey we used to collect the data. The demonstration will comprise a small number of MSI items, a trial round (1 fragment), and then X number of song fragments.
+This will help the reader to quickly and intuitively get a sense of the survey, and what it was like to complete it.
 
 
 ### Outliers and unusual findings {data-height=800}
@@ -48,22 +55,34 @@ Column {data-width=1}
 
 ```
 
+This windown will contain a summary of various outliers, e. g., maybe participants valence ratings of classical music significantly differ from Spotify's ratings? It's hard to predict right now whether this window will contain interactive elements or not - this will depend on the results of the study.
+
 Research report
 ===
 
-Column {data-width=585}
+Column {data-width=586}
 ---
 
 ### Introduction
 
+This window will contain a report-style written out introduction. Included will be: explanations of terms, prior research, description of Spotify's API and the tools used from it, the study's research question and hypothesis.
+
 ### Discussion 
+
+This window will contain a report-style written out discussion. Included will be: a general conclusion, discussion of expected/unexpected results + unusual results, limitations of the study, and advice for future research.
 
 Column {.tabset}
 ---
 
 ### Materials
 
+This tab will contain descriptions of each material we used in our study.
+
 ### Song selection
 
+This tab will contain information on how we selected the pieces of music used in our study and the reasoning behind our decisions.
+
 ### Procedure
+
+This tab will contain a step-by-step description of how the participants completed the survey. 
 
