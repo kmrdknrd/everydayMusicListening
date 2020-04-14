@@ -31,7 +31,11 @@ Column {data-width=1}
 ```{r}
 
 ```
-This window will contain a scatterplot showing the relationship between people's scores on the MSI and their scores on the valence estimation measure. Readers will also be able to view the same relationship controled for each genre, e. g., what would the scatterplot look like if only electronic songs were used in the study?
+This window will contain a scatterplot showing the relationship between people's scores on the MSI (x-axis) and their scores on the valence estimation measure (y-axis). Readers will also be able to view the same relationship controled for each genre, e. g., what would the scatterplot look like if only electronic songs were used in the study?
+
+OR
+
+This window will contain boxplots, with the participants being split into quintiles based on their MSI scores. These quintiles will be placed on the x-axis, whereas the y-axis will contain a quintile's valence estimation accuracy.
 
 ### Raw data
 
