@@ -1,6 +1,5 @@
 ---
-title: "The Data Science of Everyday Music Listening"
-author: "Prince"
+title: "Musical Sophistication and Valence Estimation"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -10,9 +9,64 @@ output:
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
-#library(ggplot2)
-#library(plotly)
-#library(DT)
+library(tidyverse)
+library(plotly)
+library(Cairo)
+library(DT)
+```
+
+
+```{r survey_data}
+#actual data visualization
+
+# survey_wide <- 
+#   read_csv('survey.csv') %>%
+#   select(
+#     'ID' = session.p_ID
+#     'MSI1' = results.MSI1,
+#     'MSI2' = results.MSI3,
+#     'MSI3' = results.MSI4,
+#     'MSI4' = results.MSI7,
+#     'MSI5' = results.MSI10,
+#     'MSI6' = results.MSI12,
+#     'MSI7' = results.MSI14,
+#     'MSI8' = results.MSI15,
+#     'MSI9' = results.MSI17,
+#     'MSI10' = results.MSI19,
+#     'MSI11' = results.MSI23,
+#     'MSI12' = results.MSI24,
+#     'MSI13' = results.MSI25,
+#     'MSI14' = results.MSI27,
+#     'MSI15' = results.MSI29,
+#     'MSI16' = results.MSI32,
+#     'MSI17' = results.MSI33,
+#     'MSI18' = results.MSI37,
+#     'songOrder'= results.valence_experiment_order,
+#     'numPlusValSong1' = results.valence_130,
+#   )
+# survey_wide
+```
+
+
+```{r fake_data}
+#fake data visualization
+
+survey <-
+  read_csv('fakeData.csv') %>%
+  select(
+    participant = session.p_id,
+    totalMSI = total.MSI,
+    valEstAcc = total.farOff
+  )
+```
+
+
+```{r lengthening}
+# L A T E R 
+
+# survey_long <-
+#   survey_wide %>%
+#   pivot_longer()
 ```
 
 Sidebar {.sidebar}
@@ -20,7 +74,7 @@ Sidebar {.sidebar}
 
 Study abstract.
 
-Results
+Results {data-orientation=rows}
 ===
 
 Column {data-width=1}
@@ -29,20 +83,28 @@ Column {data-width=1}
 ### Scatterplot: Musical Sophistication and Musical Valence Estimation {data-height=800}
 
 ```{r}
+# This window will contain a scatterplot showing the relationship between people's scores on the MSI (x-axis) and their scores on the valence estimation measure (y-axis). Readers will also be able to view the same relationship controled for each genre, e. g., what would the scatterplot look like if only electronic songs were used in the study?
+# 
+# OR
+# 
+# This window will contain boxplots, with the participants being split into quintiles based on their MSI scores. These quintiles will be placed on the x-axis, whereas the y-axis will contain a quintile's valence estimation accuracy.
 
+options(repr.plot.width=800, repr.plot.height=500)
+survey %>%
+  ggplot(aes(x = totalMSI, y = valEstAcc)) +
+  geom_point() +
+  scale_x_continuous(name = 'Gold-MSI Score') +
+  scale_y_continuous(name = 'Valence Estimation Accuracy') +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "gray")
+        )
 ```
-This window will contain a scatterplot showing the relationship between people's scores on the MSI (x-axis) and their scores on the valence estimation measure (y-axis). Readers will also be able to view the same relationship controled for each genre, e. g., what would the scatterplot look like if only electronic songs were used in the study?
 
-OR
+### Explanation of terms {data-width=175}
 
-This window will contain boxplots, with the participants being split into quintiles based on their MSI scores. These quintiles will be placed on the x-axis, whereas the y-axis will contain a quintile's valence estimation accuracy.
-
-### Raw data
-
-```{r}
-
-```
-This window will contain the raw data of each participant.
+All terms used in Results page, explained
 
 Column {data-width=1}
 ---
@@ -53,34 +115,38 @@ This window will contain a demonstration of the survey we used to collect the da
 This will help the reader to quickly and intuitively get a sense of the survey, and what it was like to complete it.
 
 
-### Outliers and unusual findings {data-height=800}
-
-```{r}
-
-```
-
-This windown will contain a summary of various outliers, e. g., maybe participants valence ratings of classical music significantly differ from Spotify's ratings? It's hard to predict right now whether this window will contain interactive elements or not - this will depend on the results of the study.
-
-Research report
+Introduction & Methods
 ===
 
 Column {data-width=586}
 ---
 
-### Introduction
+### Introduction {data-height=720}
 
-This window will contain a report-style written out introduction. Included will be: explanations of terms, prior research, description of Spotify's API and the tools used from it, the study's research question and hypothesis.
+Nowadays, music is more present in our lives than ever before. According to the latest report of the International Federation of the Phonographic Industry (IFPI), an NGO representing the music industry, the average person spends around 18 hours a week listening to music, mainly on streaming platforms (IFPI, 2018). A factor that has certainly contributed to the success of streaming services like Spotify is the development of music recommendation software. These algorithms deliver personalized playlists to the users of streaming platforms based on self-appointed the features of the music they listen to, such as energy, danceability and valence.
 
-### Discussion 
+The omnipresence of music, in combination with the growing importance of Spotify’s musical features for its algorithms, raises the question whether Spotify’s features actually correspond to the to the way in which the general public perceives music. Subsequently, it raises the more interesting question whether musically sophisticated people are better at identifying and assessing musical features. 
 
-This window will contain a report-style written out discussion. Included will be: a general conclusion, discussion of expected/unexpected results + unusual results, limitations of the study, and advice for future research.
+
+### Raw data 
 
 Column {.tabset}
 ---
 
 ### Materials
 
-This tab will contain descriptions of each material we used in our study.
+Song pool: the song pool contains 240 songs, with 20 songs per genre. The genres include: pop, rock, metal, electronic, dance, house, hip-hop, singer/songwriter, soundtrack, R&B, soul/blues and classical music. Only one song per artist was selected into the pool.
+
+Randomized playlist: from the song pool, 25 songs are randomly selected for each participant to listen to and rate.
+
+Valence rating: 7-point Likert scale, ranging from "Extremely low" (1) to "Extremely high" (7).
+
+Gold-MSI: a questionnaire used to measure musical sophistication. Calculated as total number of points on the measure. Only the short version of the questionaire is used, i. e., only the items that map onto the general musical sophistication factor.
+
+Familiarity measure: participants are asked after each song to indicate whether they were familiar with it. This is used in later analysis to see if familiarity affects participant’s judgements of a song’s valence. Measured as 1 (familiar) or 0 (unfamiliar).
+
+R web app: the web app is used to construct a randomized playlist from the song pool, administer the Gold-MSI, and collect valence and familiarity data.
+         
 
 ### Song selection
 
@@ -88,5 +154,31 @@ This tab will contain information on how we selected the pieces of music used in
 
 ### Procedure
 
-This tab will contain a step-by-step description of how the participants completed the survey. 
+Participants begin the experiment by completing the Gold-MSI to collect measures for musical sophistication. Participants will then be directed to the main experiment, where they are first be presented with a practice round. In the practice round, the participants listen to two songs, and are then asked to rate each song’s valence. After each rating in the practice round, participants are presented with the song’s true valence. After this, participants proceed to the main task, which contains the randomized playlist. After listening to a song from the playlist, participants rated the valence using a Likert/slider scale, and indicated whether they were familiar with the song.
+
+
+Discussion
+===
+
+Column
+---
+
+### General conclusion {data-height=700}
+
+### Limitations
+
+
+Column
+---
+
+### Outliers and unusual findings {data-height=719}
+
+```{r}
+
+```
+
+This window will contain a summary of various outliers, e. g., maybe participants valence ratings of classical music significantly differ from Spotify's ratings? It's hard to predict right now whether this window will contain interactive elements or not - this will depend on the results of the study.
+
+### Future research
+
 
