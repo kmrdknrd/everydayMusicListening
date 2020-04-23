@@ -71,8 +71,24 @@ survey <-
 
 Sidebar {.sidebar}
 ===
+**Study abstract**
 
-Study abstract.
+The present study investigated the relationship between musical sophistication and musical valence estimation. This was done by having participants listen to a random selection of songs, representative of 12 genres, and collecting their valence estimations of each song via an R Shiny app. Musical sophistication was measured using the Gold-MSI questionnaire, and musical valence estimation was measured using a 7-point Likert scale. missing:RESULTS. missing:CONCLUSION
+
+**Scatterplot interpretation**
+
+Higher scores on the x-axis indicate higher musical sophistication.
+
+Lower scores on the y-axis (Valence Estimation) indicate, on average, *higher* accuracy when estimating a musical fragment's valence.
+
+**Explanation of terms**
+
+**Valence** - the intrinsic positiveness that is associated, in this case, with a musical stimulus. High valences indicates positive emotional states such as happiness/cheerfulness, whereas low valence indicates negative emotional dimensions such as sadness/gloominess.
+
+**Musical sophistication** - the musical attitudes, skills and expertise of an individual.
+
+**FEEDBACK WANTED: should we explain any other terms that we use throughout the paper?**
+
 
 Results {data-orientation=rows}
 ===
@@ -94,7 +110,7 @@ survey %>%
   ggplot(aes(x = totalMSI, y = valEstAcc)) +
   geom_point() +
   scale_x_continuous(name = 'Gold-MSI Score') +
-  scale_y_continuous(name = 'Valence Estimation Accuracy') +
+  scale_y_continuous(name = 'Valence Estimation') +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
@@ -102,9 +118,9 @@ survey %>%
         )
 ```
 
-### Explanation of terms {data-width=175}
+### Scatterplot: Genre Breakdown {data-width=175}
 
-All terms used in Results page, explained
+In this window, readers will be able to select one of the twelve used genres, which will change the main scatterplot to reflect what  the relationship between musical sophistication and valence estimation would look like if *only* a specific genre (e. g., metal) were used in the study.
 
 Column {data-width=1}
 ---
@@ -118,43 +134,58 @@ This will help the reader to quickly and intuitively get a sense of the survey, 
 Introduction & Methods
 ===
 
-Column {data-width=586}
+Column {data-width=860}
 ---
 
-### Introduction {data-height=720}
+### Introduction {data-height=810}
 
-Nowadays, music is more present in our lives than ever before. According to the latest report of the International Federation of the Phonographic Industry (IFPI), an NGO representing the music industry, the average person spends around 18 hours a week listening to music, mainly on streaming platforms (IFPI, 2018). A factor that has certainly contributed to the success of streaming services like Spotify is the development of music recommendation software. These algorithms deliver personalized playlists to the users of streaming platforms based on self-appointed the features of the music they listen to, such as energy, danceability and valence.
+Nowadays, music is more present in our lives than ever before. According to the latest reports, an average person spends around 18 hours a week listening to music (IFPI 2018). The majority of this time is spent on streaming platforms like Spotify, which have displayed a consistent growth in revenue over the past decade. The fact that music has become omnipresent in our lives raises the question whether this makes people better at identifying and assessing certain musical features. In other words, is there a difference between how normal and musically sophisticated individuals perceive features of music? If this would turn out to be true, this would indicate that the way we think about music, in fact, depends on our exposure to them.
 
-The omnipresence of music, in combination with the growing importance of Spotify’s musical features for its algorithms, raises the question whether Spotify’s features actually correspond to the to the way in which the general public perceives music. Subsequently, it raises the more interesting question whether musically sophisticated people are better at identifying and assessing musical features. 
+Although this question has not been addressed directly in the academic literature, researchers have investigated how differences in musical engagement between people lead to differences in the perception of musical valence and arousal, with valence being defined as the positiveness of a track (REFERENCE), and arousal as the state of being alert or awake (REFERENCE). In their research, Olsen and colleagues (2014) conclude that such a difference exists: the variable musical engagement is a significant predictor of perceived musical arousal and valence. However, the relationship between musical sophistication and perceived musical features has not been investigated by academics as of the time of writing.
+
+To fill this gap in the literature, we decided to investigate the following research question in our study – are musically sophisticated people better at estimating a musical piece’s valence? We specifically chose to scrutinize the relationship between musical sophistication and valence, as valence is a clearly defined, well studied emotional dimension in psychology (REFERENCE). To answer our question, we make use of surveys in which we ask our participants to estimate the valence of 25 randomly selected songs. We subsequently compare their outcomes not only between each other, but also to Spotify’s valence rating of the song: our point of reference used by the world’s biggest streaming platform (REFERENCE). 
+
 
 
 ### Raw data 
+
+Raw data will be first be cleaned up and added next time, because presenting >40 columns of data in a tiny window like this does not spark joy.
 
 Column {.tabset}
 ---
 
 ### Materials
 
-Song pool: the song pool contains 240 songs, with 20 songs per genre. The genres include: pop, rock, metal, electronic, dance, house, hip-hop, singer/songwriter, soundtrack, R&B, soul/blues and classical music. Only one song per artist was selected into the pool.
+**Song pool**: the song pool contains 240 songs, with 20 songs per genre. The genres include: pop, rock, metal, electronic, dance, house, hip-hop, singer/songwriter, soundtrack, R&B, soul/blues and classical music. 
 
-Randomized playlist: from the song pool, 25 songs are randomly selected for each participant to listen to and rate.
+**Randomized playlist**: from the song pool, 25 songs are randomly selected for each participant to listen to and rate.
 
-Valence rating: 7-point Likert scale, ranging from "Extremely low" (1) to "Extremely high" (7).
+**Gold-MSI**: a questionnaire used to measure musical sophistication. Calculated as total number of points on the measure. Only the short version of the questionaire is used, i. e., only the items that map onto the general musical sophistication factor.
 
-Gold-MSI: a questionnaire used to measure musical sophistication. Calculated as total number of points on the measure. Only the short version of the questionaire is used, i. e., only the items that map onto the general musical sophistication factor.
+**Trial round**: prior to the main valence estimation task, participants are presented with two songs which they rate the valence of, and are then provided with the true valence of said songs. This is used to help the participants better conceptualize what valence is, and what the main task will look like.
 
-Familiarity measure: participants are asked after each song to indicate whether they were familiar with it. This is used in later analysis to see if familiarity affects participant’s judgements of a song’s valence. Measured as 1 (familiar) or 0 (unfamiliar).
+**Valence rating**: a 7-point Likert scale, ranging from "Extremely low" (1) to "Extremely high" (7), used to estimate a song's valence.
 
-R web app: the web app is used to construct a randomized playlist from the song pool, administer the Gold-MSI, and collect valence and familiarity data.
+**Familiarity measure**: a measured used to indicate whether the participant is familiar with the song that they are rating. This is used in later analysis to see if familiarity affects participant’s judgements of a song’s valence. Measured as 1 (familiar) or 0 (unfamiliar).
+
+**R Shiny web app**: the web app is used to construct a randomized playlist from the song pool, administer the Gold-MSI, and collect valence and familiarity data.
          
 
 ### Song selection
 
-This tab will contain information on how we selected the pieces of music used in our study and the reasoning behind our decisions.
+In total, 242 songs were used in this experiment.
+
+Two songs were the same for each participant, namely the trial round songs. These were selected to help participants better conceptualize musical valence. The first song had an extremely high valence value (7), whereas the second song was closer to the middle of the scale and had a slightly low value (3).
+
+The selection process for the other 240 songs began with a breakdown of musical genres - we chose 12 genres based on a survey that was conducted using a sample of 19000 people between the age of 16-64, measuring the 12 most consumed genres of music in the U.S. (REFERENCE). For each genre 20 songs were selected making use of the website ‘rateyourmusic.com’, where albums can be sorted by their average user-submitted rating, by genre. We sampled songs from these highly-rated albums, working under the assumption that well-regarded albums in a given genre are the most representative of said genre. Each sample of songs contained  only one song per artist, in a given genre.
+
+During the selection process, we also took note of the valence of the sampled songs. We made sure that - per genre - no valence value was overrepresented or underrepresented, given what is usual for a specific genre; e. g., if a genre is generally characterized as having songs with higher valence, the song pool for said genre would be skewed towards, on average, higher values as well (compared to a song pool of a genre that is characterized as having lower valence songs).
+
+Once the songs were selected, we trimmed each musical item's length. As a rule of thumb, we chose the 15 seconds from one minute of playback into the song. Some of the selected songs started with an intro, however, this did not count towards the minute.
 
 ### Procedure
 
-Participants begin the experiment by completing the Gold-MSI to collect measures for musical sophistication. Participants will then be directed to the main experiment, where they are first be presented with a practice round. In the practice round, the participants listen to two songs, and are then asked to rate each song’s valence. After each rating in the practice round, participants are presented with the song’s true valence. After this, participants proceed to the main task, which contains the randomized playlist. After listening to a song from the playlist, participants rated the valence using a Likert/slider scale, and indicated whether they were familiar with the song.
+Participants begin the experiment by completing the Gold-MSI to collect measures for musical sophistication. Participants are then  directed to the main experiment, where they are first  presented with a practice round. In the practice round, participants listen to two songs, and are then asked to rate each song’s valence. After each rating in the practice round, participants are presented with the song’s true valence as determined by Spotify. After this, participants proceed to the main task, which contains the randomized playlist. After listening to a song from the playlist, participants rate the valence using a 7-point Likert scale, and indicate whether they are familiar with the song.
 
 
 Discussion
@@ -163,7 +194,7 @@ Discussion
 Column
 ---
 
-### General conclusion {data-height=700}
+### General conclusion {data-height=791}
 
 ### Limitations
 
@@ -171,7 +202,7 @@ Column
 Column
 ---
 
-### Outliers and unusual findings {data-height=719}
+### Outliers and unusual findings {data-height=808}
 
 ```{r}
 
@@ -181,4 +212,27 @@ This window will contain a summary of various outliers, e. g., maybe participant
 
 ### Future research
 
+Appendix
+===
+
+Column
+---
+
+### References
+
+This window will contain references to the material that we use throught the report.
+
+Column
+---
+
+### R Shiny app code
+
+This window will contain the code of the R Shiny app that we used to gather data from our participants.
+
+Column
+---
+
+### Flexdashboard code
+
+This window will contain the code used to flexdashboardize our report.
 
