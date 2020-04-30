@@ -13,60 +13,82 @@ library(tidyverse)
 library(plotly)
 library(Cairo)
 library(DT)
+library(reshape2)
+library(data.table)
+library(varhandle)
 ```
 
 
-```{r survey_data}
-#actual data visualization
+```{r survey data}
+#data cleaning 
 
-# survey_wide <- 
-#   read_csv('survey.csv') %>%
-#   select(
-#     'ID' = session.p_ID
-#     'MSI1' = results.MSI1,
-#     'MSI2' = results.MSI3,
-#     'MSI3' = results.MSI4,
-#     'MSI4' = results.MSI7,
-#     'MSI5' = results.MSI10,
-#     'MSI6' = results.MSI12,
-#     'MSI7' = results.MSI14,
-#     'MSI8' = results.MSI15,
-#     'MSI9' = results.MSI17,
-#     'MSI10' = results.MSI19,
-#     'MSI11' = results.MSI23,
-#     'MSI12' = results.MSI24,
-#     'MSI13' = results.MSI25,
-#     'MSI14' = results.MSI27,
-#     'MSI15' = results.MSI29,
-#     'MSI16' = results.MSI32,
-#     'MSI17' = results.MSI33,
-#     'MSI18' = results.MSI37,
-#     'songOrder'= results.valence_experiment_order,
-#     'numPlusValSong1' = results.valence_130,
-#   )
-# survey_wide
+data_wide <-
+  read_csv('survey upd1.csv', TRUE)
+
+#deleting irrelevant columns
+data_wide <- data_wide[, -c(1:8, 24, 28:29)]
+
+#COLUMNS 1:18 ARE MSI RESULTS
+#COLUMN 19 IS SONG ORDER
+
+#deleting all instances of 'MSI' in front of a value
+data_wide <- data.frame(lapply(data_wide, function(x){
+  gsub("MSI", "", x)
+}))
+
+#renaming the MSI columns
+names(data_wide)[1:18] = paste0("MSI", 1:18)
+
+#renaming the valence columns
+names(data_wide)[c(20:69)[seq(1, 50, 2)]] = paste0("song", 1:25, "_valence")
+
+#renaming the familiarity columns
+names(data_wide)[c(20:69)[seq(2, 50, 2)]] = paste0("song", 1:25, "_familiarity")
+
+#splitting the columns from "songID_valenceEst" to column "songID" and column "valenceEst"
+setDT(data_wide)
+cols <- grep("song", names(data_wide), value = TRUE)
+for (i in cols) {
+  temp <- tstrsplit(data_wide[[i]], "_")
+  set(data_wide, j = sprintf("%s_%d", i, seq_along(temp)), value = temp)
+  set(data_wide, j = i, value = NULL)
+}
+
+#deleting duplicate-value columns (familiarity_1)
+data_wide <- data_wide[, -c(20:119)[seq(3, 100, 4)]]
+
+names(data_wide) <- gsub("valence_1", "ID", names(data_wide))
+names(data_wide) <- gsub("valence_2", "estVal", names(data_wide))
+names(data_wide) <- gsub("familiarity_2", "familiar", names(data_wide))
+
+data_wide <- unfactor(data_wide)
+
+part_data_wide <-
+  read_csv2("participants_results.csv")
+
+#deleting irrelevant columns
+part_data_wide <- part_data_wide[, -1]
+
+#renaming the deviation columns
+names(part_data_wide)[c(4:6)] = paste0("dev", 1:3)
+names(part_data_wide)[1] = "MSI_total"
+names(part_data_wide)[2] = "ValOff_total"
+
+data_wide$MSI1 <- part_data_wide$MSI_total
+data_wide <- data_wide[, -c(2:18)]
+names(data_wide)[1] = "MSI_TOTAL"
+
+write.csv(data_wide, "data_wide_clean.csv")
+
 ```
 
-
-```{r fake_data}
-#fake data visualization
-
-survey <-
-  read_csv('fakeData.csv') %>%
-  select(
-    participant = session.p_id,
-    totalMSI = total.MSI,
-    valEstAcc = total.farOff
-  )
-```
 
 
 ```{r lengthening}
-# L A T E R 
-
-# survey_long <-
-#   survey_wide %>%
-#   pivot_longer()
+# 
+# data_long <-
+#   data_wide %>%
+#   gather()
 ```
 
 Sidebar {.sidebar}
@@ -87,16 +109,14 @@ Lower scores on the y-axis (Valence Estimation) indicate, on average, *higher* a
 
 **Musical sophistication** - the musical attitudes, skills and expertise of an individual.
 
-**FEEDBACK WANTED: should we explain any other terms that we use throughout the paper?**
-
 
 Results {data-orientation=rows}
 ===
 
-Column {data-width=1}
+Column {.tabset}
 ---
 
-### Scatterplot: Musical Sophistication and Musical Valence Estimation {data-height=800}
+### Overall {data-height=800}
 
 ```{r}
 # This window will contain a scatterplot showing the relationship between people's scores on the MSI (x-axis) and their scores on the valence estimation measure (y-axis). Readers will also be able to view the same relationship controled for each genre, e. g., what would the scatterplot look like if only electronic songs were used in the study?
@@ -106,11 +126,15 @@ Column {data-width=1}
 # This window will contain boxplots, with the participants being split into quintiles based on their MSI scores. These quintiles will be placed on the x-axis, whereas the y-axis will contain a quintile's valence estimation accuracy.
 
 options(repr.plot.width=800, repr.plot.height=500)
-survey %>%
-  ggplot(aes(x = totalMSI, y = valEstAcc)) +
+part_data_wide %>%
+  ggplot(aes(x = MSI_total, y = ValOff_total)) +
   geom_point() +
+  geom_smooth(method = "lm") +
+  annotate(x = 100, y = 37, 
+         label=paste("r = ", round(cor(part_data_wide$MSI_total, part_data_wide$ValOff_total),2)), 
+         geom="text", size=5) +
   scale_x_continuous(name = 'Gold-MSI Score') +
-  scale_y_continuous(name = 'Valence Estimation') +
+  scale_y_continuous(name = 'Valence Estimation Accuracy') +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
@@ -118,14 +142,53 @@ survey %>%
         )
 ```
 
-### Scatterplot: Genre Breakdown {data-width=175}
+### Pop
 
-In this window, readers will be able to select one of the twelve used genres, which will change the main scatterplot to reflect what  the relationship between musical sophistication and valence estimation would look like if *only* a specific genre (e. g., metal) were used in the study.
+These tabs will contain violin plots, with signed valence accuracy on the y-axis and the actual mean genre valence as a line in the violin. In other words, this will allow to visually understand whether some genres were consistently over- or under-valued. 
+```{r pop specific}
+
+
+
+```
+
+
+### Rock
+
+
+### Dance
+
+
+### Electronic
+
+
+### House
+
+
+### Soundtracks
+
+
+### Hip-Hop
+
+
+### Singer/Songwriter
+
+
+### Classical
+
+
+### R&B
+
+
+### Soul/Blues
+
+
+### Metal
+
 
 Column {data-width=1}
 ---
 
-### Experiment: Demo
+### Experiment: Demo {data-height=200}
 
 This window will contain a demonstration of the survey we used to collect the data. The demonstration will comprise a small number of MSI items, a trial round (1 fragment), and then X number of song fragments.
 This will help the reader to quickly and intuitively get a sense of the survey, and what it was like to complete it.
@@ -149,7 +212,13 @@ To fill this gap in the literature, we decided to investigate the following rese
 
 ### Raw data 
 
-Raw data will be first be cleaned up and added next time, because presenting >40 columns of data in a tiny window like this does not spark joy.
+```{r raw data}
+
+DT::datatable(data_wide, options = list(
+  bPaginate = FALSE
+))
+
+```
 
 Column {.tabset}
 ---
@@ -188,29 +257,48 @@ Once the songs were selected, we trimmed each musical item's length. As a rule o
 Participants begin the experiment by completing the Gold-MSI to collect measures for musical sophistication. Participants are then  directed to the main experiment, where they are first  presented with a practice round. In the practice round, participants listen to two songs, and are then asked to rate each song’s valence. After each rating in the practice round, participants are presented with the song’s true valence as determined by Spotify. After this, participants proceed to the main task, which contains the randomized playlist. After listening to a song from the playlist, participants rate the valence using a 7-point Likert scale, and indicate whether they are familiar with the song.
 
 
+
 Discussion
 ===
 
 Column
 ---
 
-### General conclusion {data-height=791}
+### General conclusion 
 
-### Limitations
+The present study sought to investigate the relationship between musical sophistication and valence estimation by comparing people's valence estimates against values provided by Spotify. Counter to the main hypohtesis, the results showed a weak positive relationship between musical sophistication and valence estimation inaccuracy. This indicates that musical sophistication is not a predictor of accurate perception of musical valence, and that musical sophistication might even interfere with valence perception, though this should be taken with a grain (or nugget) of salt. MISSING INFO: GENRE BREAKDOWN. MISSING INFO: CORRELATION WITH SPOTIFY'S VALUES AND DISCUSSION OF THESE RESULTS.
+
+### Correlation: Estimated Valence and True Valence
+
+This window will contain a scatterplot visualizing the correlation between each song's (average) estimated valence, and Spotify's 'true' valence values
 
 
 Column
 ---
 
-### Outliers and unusual findings {data-height=808}
+### Genre & Valence Estimate Deviation
 
-```{r}
+```{r genres data}
+
+genres_data <- read_csv2("genres_results.csv")
+
+genres_data %>%
+  ggplot(aes(x = genre, y = valence_total_dev)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  scale_x_discrete(name = element_blank()) +
+  scale_y_continuous(name = 'Total Valence Deviation') +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "gray35")
+        )
 
 ```
 
-This window will contain a summary of various outliers, e. g., maybe participants valence ratings of classical music significantly differ from Spotify's ratings? It's hard to predict right now whether this window will contain interactive elements or not - this will depend on the results of the study.
-
 ### Future research
+
+This window will contain advice for future research into the area of musical valence. Contents will depend on correlation with Spotify's values and (less so) on insights gained from genre breakdown.
 
 Appendix
 ===
@@ -225,14 +313,7 @@ This window will contain references to the material that we use throught the rep
 Column
 ---
 
-### R Shiny app code
+### Downloadables
 
-This window will contain the code of the R Shiny app that we used to gather data from our participants.
-
-Column
----
-
-### Flexdashboard code
-
-This window will contain the code used to flexdashboardize our report.
+Links to our GitHub repositories, and to downloadables of the data we used
 

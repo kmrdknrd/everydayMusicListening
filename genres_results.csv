@@ -1,0 +1,13 @@
+genre;count;valence_total_dev;valences_correct;deviation_1;deviation_2;deviation_3plus
+ Pop; 91;143;18;35;20;36
+ Rock;102;173;16;35;24;43
+ Dance; 82;163;15;19;16;47
+ Electronic; 86;140;16;29;19;38
+ House;101;235;14;26;20;55
+ Soundtracks; 84;180;11;30;13;41
+ Hip-Hop; 77;141;10;29;15;33
+ Singer/Songwriter; 83;122;16;33;18;32
+ Classical; 92;154;23;29;15;48
+R&B; 79; 98;21;30;18;31
+Soul/Blues; 84;143;16;22;27;35
+Metal; 89;187;14;25;23;41
