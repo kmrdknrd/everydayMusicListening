@@ -78,21 +78,64 @@ data_wide$MSI1 <- part_data_wide$MSI_total
 data_wide <- data_wide[, -c(2:18)]
 names(data_wide)[1] = "MSI_TOTAL"
 
-write.csv(data_wide, "data_wide_clean.csv")
-
 ```
 
 
 
 ```{r lengthening}
-# 
-# data_long <-
-#   data_wide %>%
-#   gather()
+
+data_long <- melt(setDT(data_wide), id=1L,
+                  measure = patterns("ID$", "estVal$", "familiar$"),
+                  value.name = c("song_ID", "estVal", "familiarity"))
+
+data_long$song_ID <- as.numeric(as.character(data_long$song_ID))
+data_long$estVal <- as.numeric(as.character(data_long$estVal))
+data_long$variable <- as.numeric(as.character(data_long$variable))
+
+data_long$genre <-
+  ifelse(data_long$song_ID < 21, "Pop",
+         ifelse(data_long$song_ID < 41, "Rock",
+                ifelse(data_long$song_ID < 61, "Dance",
+                       ifelse(data_long$song_ID < 81, "Electronic",
+                              ifelse(data_long$song_ID < 101, "House",
+                                     ifelse(data_long$song_ID < 121, "Soundtracks",
+                                            ifelse(data_long$song_ID < 141, "Hip-Hop",
+                                                   ifelse(data_long$song_ID < 161, "Singer/Songwriter",
+                                                          ifelse(data_long$song_ID < 181, "Classical",
+                                                                 ifelse(data_long$song_ID < 201, "R&B",
+                                                                        ifelse(data_long$song_ID < 221, "Soul/Blues", "Metal")
+                                                                        )
+                                                                 )
+                                                          )
+                                                   )
+                                            )
+                                     )
+                              )
+                       )
+                )
+         )
+  
+data_long <- data_long[order(data_long$song_ID)]
 ```
 
-Sidebar {.sidebar}
+```{r valencing}
+valences_data <-
+  read_csv("valences.csv")
+
+for(i in 1:nrow(data_long)) {
+    data_long$truVal <- valences_data$valence[data_long$song_ID]
+}
+
+data_long$signValDev <- data_long$estVal - data_long$truVal
+
+```
+
+
+Results {data-orientation=rows}
 ===
+
+Sidebar {.sidebar}
+---
 **Study abstract**
 
 The present study investigated the relationship between musical sophistication and musical valence estimation. This was done by having participants listen to a random selection of songs, representative of 12 genres, and collecting their valence estimations of each song via an R Shiny app. Musical sophistication was measured using the Gold-MSI questionnaire, and musical valence estimation was measured using a 7-point Likert scale. missing:RESULTS. missing:CONCLUSION
@@ -109,21 +152,12 @@ Lower scores on the y-axis (Valence Estimation) indicate, on average, *higher* a
 
 **Musical sophistication** - the musical attitudes, skills and expertise of an individual.
 
-
-Results {data-orientation=rows}
-===
-
 Column {.tabset}
 ---
 
-### Overall {data-height=800}
+### Scatterplot: Musical Sophistication and Valence Estimation Accuracy {data-height=800}
 
-```{r}
-# This window will contain a scatterplot showing the relationship between people's scores on the MSI (x-axis) and their scores on the valence estimation measure (y-axis). Readers will also be able to view the same relationship controled for each genre, e. g., what would the scatterplot look like if only electronic songs were used in the study?
-# 
-# OR
-# 
-# This window will contain boxplots, with the participants being split into quintiles based on their MSI scores. These quintiles will be placed on the x-axis, whereas the y-axis will contain a quintile's valence estimation accuracy.
+```{r mainplot, fig.width = 8}
 
 options(repr.plot.width=800, repr.plot.height=500)
 part_data_wide %>%
@@ -142,47 +176,30 @@ part_data_wide %>%
         )
 ```
 
-### Pop
+### Violin Plots: Valence Estimation Deviation by Genre
 
-These tabs will contain violin plots, with signed valence accuracy on the y-axis and the actual mean genre valence as a line in the violin. In other words, this will allow to visually understand whether some genres were consistently over- or under-valued. 
-```{r pop specific}
+```{r violin plots, fig.width=11}
 
+genre_truVal_means <- data_long %>%
+  group_by(genre) %>%
+  summarise(signValDev=mean(truVal))
 
+data_long %>%
+  ggplot(aes(x = genre, y = signValDev, color=genre)) +
+  geom_violin() +
+  geom_boxplot(width=0.1) +
+  geom_hline(yintercept=0, linetype="dashed", color = "gray90") +
+  scale_y_continuous(name = "Valence Estimate Deviation", limits = c(-6, 6)) +
+  scale_x_discrete(name = element_blank()) +
+  scale_color_brewer(palette="Paired") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "gray35"),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
+        )
 
 ```
-
-
-### Rock
-
-
-### Dance
-
-
-### Electronic
-
-
-### House
-
-
-### Soundtracks
-
-
-### Hip-Hop
-
-
-### Singer/Songwriter
-
-
-### Classical
-
-
-### R&B
-
-
-### Soul/Blues
-
-
-### Metal
 
 
 Column {data-width=1}
@@ -276,18 +293,18 @@ This window will contain a scatterplot visualizing the correlation between each 
 Column
 ---
 
-### Genre & Valence Estimate Deviation
+### Bar Chart: Average Valence Estimate Deviation
 
-```{r genres data}
+```{r genres data, fig.width = 9}
 
 genres_data <- read_csv2("genres_results.csv")
 
 genres_data %>%
-  ggplot(aes(x = genre, y = valence_total_dev)) +
+  ggplot(aes(x = genre, y = valence_total_dev/count )) +
   geom_col() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
   scale_x_discrete(name = element_blank()) +
-  scale_y_continuous(name = 'Total Valence Deviation') +
+  scale_y_continuous(name = 'Average Valence Deviation') +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
