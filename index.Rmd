@@ -225,9 +225,10 @@ Column {data-width=860}
 
 Nowadays, music is more present in our lives than ever before. According to the International Federation of the Phonographic Society (2018), an average person spends around 18 hours a week listening to music. The majority of this time is spent on streaming platforms like Spotify, which have displayed a consistent growth in revenue over the past decade. The fact that music has become omnipresent in our lives raises the question whether this makes people better at identifying and assessing certain musical features. In other words, is there a difference between how normal and musically sophisticated individuals perceive features of music? If this would turn out to be true, this would indicate that the way we think about music, in fact, depends on our exposure to it.
 
-Although this question has not been addressed directly in the academic literature, researchers have investigated how differences in musical engagement between people lead to differences in the perception of musical valence and arousal, with valence being defined as the positiveness of a track (REFERENCE), and arousal as the state of being alert or awake (REFERENCE). In their research, Olsen and colleagues (2014) conclude that such a difference exists: the variable musical engagement is a significant predictor of perceived musical arousal and valence. However, the relationship between musical sophistication and perceived musical features has not been investigated by academics as of the time of writing.
+Although this question has not been addressed directly in the academic literature, researchers have investigated how differences in musical engagement between people lead to differences in the perception of musical valence and arousal, with valence being defined as the positiveness of a track (Frijda, 1986), and arousal as the state of being alert or awake (Warriner et al., 1986). In their research, Olsen and colleagues (2014) conclude that such a difference exists: the variable musical engagement is a significant predictor of perceived musical arousal and valence. However, the relationship between musical sophistication and perceived musical features has not been investigated by academics at the time of writing this paper.
 
-To fill this gap in the literature, we decided to investigate the following research question in our study – are musically sophisticated people better at estimating a musical piece’s valence? We specifically chose to scrutinize the relationship between musical sophistication and valence, as valence is a clearly defined, well studied emotional dimension in psychology (REFERENCE). To answer our question, we make use of surveys in which we ask our participants to estimate the valence of 25 randomly selected songs. We subsequently compare their outcomes not only between each other, but also to Spotify’s valence rating of the song: our point of reference used by the world’s biggest streaming platform (REFERENCE).
+To fill this gap in the literature, we decided to investigate the following research question in our study: are musically sophisticated people better at estimating a musical piece’s valence? We specifically chose to scrutinize the relationship between musical sophistication and valence, as valence is a clearly defined, well studied emotional dimension in psychology. To answer our question, we make use of surveys in which we ask our participants to estimate the valence of 25 randomly selected songs. We subsequently compare their outcomes not only between each other, but also to Spotify’s valence rating of the song: our point of reference used by the world’s biggest streaming platform (Spotify, 2018).
+
 
 
 
@@ -284,6 +285,10 @@ Exploration {data-orientation=rows}
 
 Sidebar {.sidebar data-width=300}
 ---
+Text about how this is exploratory research, and how **hard** conclusions cannot be drawn from these graphs, but how they nevertheless can guide future research.
+
+Plus, some info on the different types of graphs
+
 
 Row {.tabset data-height=600}
 ---
@@ -399,17 +404,17 @@ scatterplot1
 
 ### Bar: Average Valence Estimation Deviation
 
-```{r genres data, fig.width=9}
+```{r genres data, fig.width=10}
 
 genres_data <- read_csv2("genres_results.csv")
+  
 
-genres_data %>%
-  ggplot(aes(x = genre, y = valence_total_dev/count, fill = genre)) +
+data_long %>%
+  ggplot(aes(x = genre, y = signValDev, fill = signValDevFact)) +
   geom_col() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
   scale_x_discrete(name = element_blank()) +
-  scale_y_continuous(name = 'Average Valence Deviation') +
-  scale_fill_brewer(palette="Paired") +
+  scale_y_continuous(name = 'Valence Deviation Count') +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
@@ -421,11 +426,18 @@ genres_data %>%
 Row {.tabset}
 ---
 ### Violin Interpretation
-Discuss the insights you can draw from the above graphs
+The violin graph plots the 12 genres against the average valence estimation deviation (i.e. the average of difference between what participants estimated and Spotify’s true valence). This plot consists of two parts: one is the box plot, the other is the ‘violin’. From the box plot we can see the minimum and maximum values, as well as the first quantile, median and third quantile. The thickness of the violin indicates the number of observations for a particular valence deviation.
+
+From this graph we can deduct whether the valences in particular genres were systematically being over- or underestimated by participants. We see that for five genres this is not the case: Electronic, Hip-Hop, Pop, R&B and Singer/Songwriter all have a median of 0. For the other genres however, the medians range from -1 to +2. The most significant being Dance and House with an average of two points estimated above the true valence. For Soundtracks we see that the first quantile and median are equal to +1, but the third quantile is +4.
 
 ### Jitter Interpretation
 
 ### Scatter Interpretation
+
+As you can see, some genres have similar graphs, but overall the graphs differ much from each other. A single graph in which all genres are included would not lead to a concise result. However, the graphs do show pretty interesting genre specific results. For most genres there is a positive trend, which is most accurately shown by the data for R&B and Singer-Songwriter. Another noteworthy result is that for Dance and House the lower valence values are overestimated on average, for Metal the higher valence values are underestimated on average. For Electronic, Hip-Hop and Rock most average estimates are around the central value, which indicates that for these genres the positivity-grade is not clearly distinguishable.
+
+What also can be seen is that for most genres, songs with extreme-valued valences, so 1 or 7, are not recognized by all participants the song was tested on. These results raise the question whether the valence values determined by Spotify are actually representative for the valence or positivity it evokes in people. The Soundtracks graph raises the same question, because Spotify determined all but one track to have valence value 1 or 2, but the on average judgement by the participants is very spread out.  
+
 
 ### Bar Interpretation
 
@@ -460,7 +472,13 @@ Column
 
 ### References
 
-This window will contain references to the material that we use throught the report.
+Frijda, N. H. (1986). The emotions. Cambridge: Cambridge University Press.
+
+International Federation of the Phonographic Society. (2018). IFPI Global Music Report 2019. Retrieved from: https://www.ifpi.org/news/IFPI-GLOBAL-MUSIC-REPORT-2019
+
+Spotify. (2018). Spotify Technology S.A. Announces Financial Results for First Quarter 2018. Retrieved from: https://investors.spotify.com/financials/press-release-details/2018/Spotify-Technology-SA-Announces-Financial-Results-for-First-Quarter-2018/default.aspx
+
+Warriner, A. B., Kuperman, V., & Brysbaert, M. (2013). Norms of valence, arousal, and dominance for 13,915 English lemmas. Behavior research methods, 45(4), 1191-1207.
 
 Column
 ---
