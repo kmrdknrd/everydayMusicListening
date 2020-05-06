@@ -16,6 +16,7 @@ library(DT)
 library(reshape2)
 library(data.table)
 library(varhandle)
+library(readxl)
 ```
 
 
@@ -131,20 +132,15 @@ data_long$signValDev <- data_long$estVal - data_long$truVal
 ```
 
 
-Results {data-orientation=rows}
+Main Findings {data-orientation=rows}
 ===
 
-Sidebar {.sidebar}
+Sidebar {.sidebar data-width=350}
 ---
+
 **Study abstract**
 
-The present study investigated the relationship between musical sophistication and musical valence estimation. This was done by having participants listen to a random selection of songs, representative of 12 genres, and collecting their valence estimations of each song via an R Shiny app. Musical sophistication was measured using the Gold-MSI questionnaire, and musical valence estimation was measured using a 7-point Likert scale. missing:RESULTS. missing:CONCLUSION
-
-**Scatterplot interpretation**
-
-Higher scores on the x-axis indicate higher musical sophistication.
-
-Lower scores on the y-axis (Valence Estimation) indicate, on average, *higher* accuracy when estimating a musical fragment's valence.
+The present study investigated the relationship between musical sophistication and musical valence estimation. This was done by having participants listen to a random selection of songs, representative of 12 genres, and collecting their valence estimations of each song via an R Shiny app. Musical sophistication was measured using the Gold-MSI questionnaire, and musical valence estimation was measured using a 7-point Likert scale. The results showed no negative correlation between scores on the Gold-MSI and Likert scale rating. Based on the above, we conclude that there is no relationship between musical sophistication and musical valence estimation.
 
 **Explanation of terms**
 
@@ -152,66 +148,74 @@ Lower scores on the y-axis (Valence Estimation) indicate, on average, *higher* a
 
 **Musical sophistication** - the musical attitudes, skills and expertise of an individual.
 
-Column {.tabset}
+**Hypothesis**
+
+There is a negative relationship between musical sophistication and musical valence estimation error.
+
+**Analysis & Results**
+
+Analysis was conducted using R's built-in cor.test() function, running a Pearson's product-moment correlation.
+
+Correlation: Gold-MSI & Valence Estimation Error 
+
+<font style = "font-family: times, serif; font-size:16pt;"> (*r* = 0.13, *p* = 0.79) </font>
+
+**Scatterplot interpretation**
+
+Higher scores on the x-axis (Gold-MSI Score) indicate higher musical sophistication.
+
+Higher scores on the y-axis (Average Valence Estimation Error) indicate, on average, higher error (and in turn, lower accuracy) when estimating a musical fragment's valence.
+
+Column
 ---
 
-### Scatterplot: Musical Sophistication and Valence Estimation Accuracy {data-height=800}
+### Scatterplot: Musical Sophistication and Valence Estimation Error {data-height=800}
 
 ```{r mainplot, fig.width = 8}
 
+mainplot_corr <- cor.test(part_data_wide$MSI_total, part_data_wide$ValOff_total, "less")
+
 options(repr.plot.width=800, repr.plot.height=500)
-part_data_wide %>%
-  ggplot(aes(x = MSI_total, y = ValOff_total)) +
+mainplot <- part_data_wide %>%
+  ggplot(aes(x = MSI_total, y = ValOff_total/25)) +
   geom_point() +
   geom_smooth(method = "lm") +
-  annotate(x = 100, y = 37, 
-         label=paste("r = ", round(cor(part_data_wide$MSI_total, part_data_wide$ValOff_total),2)), 
+  annotate(x = 100,
+           y = 37/25,
+           label=paste("r = ",
+                       round(cor(part_data_wide$MSI_total, part_data_wide$ValOff_total),2)
+                       ),
          geom="text", size=5) +
   scale_x_continuous(name = 'Gold-MSI Score') +
-  scale_y_continuous(name = 'Valence Estimation Accuracy') +
+  scale_y_continuous(name = 'Average Valence Estimation Error') +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         axis.line = element_line(colour = "gray")
         )
-```
 
-### Violin Plots: Valence Estimation Deviation by Genre
-
-```{r violin plots, fig.width=11}
-
-genre_truVal_means <- data_long %>%
-  group_by(genre) %>%
-  summarise(signValDev=mean(truVal))
-
-data_long %>%
-  ggplot(aes(x = genre, y = signValDev, color=genre)) +
-  geom_violin() +
-  geom_boxplot(width=0.1) +
-  geom_hline(yintercept=0, linetype="dashed", color = "gray90") +
-  scale_y_continuous(name = "Valence Estimate Deviation", limits = c(-6, 6)) +
-  scale_x_discrete(name = element_blank()) +
-  scale_color_brewer(palette="Paired") +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "gray35"),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
-        )
-
+ggplotly(mainplot)
 ```
 
 
-Column {data-width=1}
+Column {.tabset}
 ---
 
-### Experiment: Demo {data-height=200}
+### Interactive Experiment: Intro
 
-This window will contain a demonstration of the survey we used to collect the data. The demonstration will comprise a small number of MSI items, a trial round (1 fragment), and then X number of song fragments.
-This will help the reader to quickly and intuitively get a sense of the survey, and what it was like to complete it.
+We challenge you to beat our participants! In this experiment demo you get to experience what our research is about in an interactive way. In the following tabs we have included short versions of the different parts in our survey.
+First, you get to make a mini Gold-MSI test. The result places you on the musical sophistication scale. The higher your score, the more knowledge and experience you have with music.
+The second part consists of a few songs that we used in the survey. It is up to you to determine the valence value of each song to the best of your ability! For both the Gold-MSI test and the song estimation test, the results are on the subsequent tab.
+After you have determined your scores, you can see in the graph where you would have approximately been in our sample and if you have surpassed the participants. How to grade yourself is further explained on the answer tabs. Good luck!
+
+### Mini-MSI
+
+### Musical Fragments
+
+### Answers and Grading
 
 
-Introduction & Methods
+Background
 ===
 
 Column {data-width=860}
@@ -219,11 +223,11 @@ Column {data-width=860}
 
 ### Introduction {data-height=810}
 
-Nowadays, music is more present in our lives than ever before. According to the latest reports, an average person spends around 18 hours a week listening to music (IFPI 2018). The majority of this time is spent on streaming platforms like Spotify, which have displayed a consistent growth in revenue over the past decade. The fact that music has become omnipresent in our lives raises the question whether this makes people better at identifying and assessing certain musical features. In other words, is there a difference between how normal and musically sophisticated individuals perceive features of music? If this would turn out to be true, this would indicate that the way we think about music, in fact, depends on our exposure to them.
+Nowadays, music is more present in our lives than ever before. According to the International Federation of the Phonographic Society (2018), an average person spends around 18 hours a week listening to music. The majority of this time is spent on streaming platforms like Spotify, which have displayed a consistent growth in revenue over the past decade. The fact that music has become omnipresent in our lives raises the question whether this makes people better at identifying and assessing certain musical features. In other words, is there a difference between how normal and musically sophisticated individuals perceive features of music? If this would turn out to be true, this would indicate that the way we think about music, in fact, depends on our exposure to it.
 
 Although this question has not been addressed directly in the academic literature, researchers have investigated how differences in musical engagement between people lead to differences in the perception of musical valence and arousal, with valence being defined as the positiveness of a track (REFERENCE), and arousal as the state of being alert or awake (REFERENCE). In their research, Olsen and colleagues (2014) conclude that such a difference exists: the variable musical engagement is a significant predictor of perceived musical arousal and valence. However, the relationship between musical sophistication and perceived musical features has not been investigated by academics as of the time of writing.
 
-To fill this gap in the literature, we decided to investigate the following research question in our study – are musically sophisticated people better at estimating a musical piece’s valence? We specifically chose to scrutinize the relationship between musical sophistication and valence, as valence is a clearly defined, well studied emotional dimension in psychology (REFERENCE). To answer our question, we make use of surveys in which we ask our participants to estimate the valence of 25 randomly selected songs. We subsequently compare their outcomes not only between each other, but also to Spotify’s valence rating of the song: our point of reference used by the world’s biggest streaming platform (REFERENCE). 
+To fill this gap in the literature, we decided to investigate the following research question in our study – are musically sophisticated people better at estimating a musical piece’s valence? We specifically chose to scrutinize the relationship between musical sophistication and valence, as valence is a clearly defined, well studied emotional dimension in psychology (REFERENCE). To answer our question, we make use of surveys in which we ask our participants to estimate the valence of 25 randomly selected songs. We subsequently compare their outcomes not only between each other, but also to Spotify’s valence rating of the song: our point of reference used by the world’s biggest streaming platform (REFERENCE).
 
 
 
@@ -239,6 +243,7 @@ DT::datatable(data_wide, options = list(
 
 Column {.tabset}
 ---
+
 
 ### Materials
 
@@ -274,6 +279,156 @@ Once the songs were selected, we trimmed each musical item's length. As a rule o
 Participants begin the experiment by completing the Gold-MSI to collect measures for musical sophistication. Participants are then  directed to the main experiment, where they are first  presented with a practice round. In the practice round, participants listen to two songs, and are then asked to rate each song’s valence. After each rating in the practice round, participants are presented with the song’s true valence as determined by Spotify. After this, participants proceed to the main task, which contains the randomized playlist. After listening to a song from the playlist, participants rate the valence using a 7-point Likert scale, and indicate whether they are familiar with the song.
 
 
+Exploration {data-orientation=rows}
+===
+
+Sidebar {.sidebar data-width=300}
+---
+
+Row {.tabset data-height=600}
+---
+### Violin: Valence Estimation Deviation Density
+
+```{r violin plots, fig.width=12}
+
+data_long$signValDevFact <- as.factor(as.numeric(data_long$signValDev))
+
+genre_statistics <- data_long %>%
+  group_by(genre) %>%
+  summarise(
+    meanTruVal=mean(truVal),
+    signValEstSD=sd(signValDev)
+    )
+
+data_long %>%
+  ggplot(aes(x = genre, y = signValDev, color=genre)) +
+  geom_violin() +
+  geom_boxplot(width=0.1) +
+  geom_hline(yintercept=0, linetype="dashed", color = "gray90") +
+  scale_y_continuous(name = "Valence Estimate Deviation", limits = c(-6, 6)) +
+  scale_x_discrete(name = element_blank()) +
+  scale_color_brewer(palette="Paired") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "gray35"),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
+        )
+
+```
+
+### Jitter: Musical Sophistication & Valence Estimation by Genre
+
+```{r Lars graph, fig.width=8}
+
+library(readxl)
+dataset_scatter_complete <- read_excel("dataset_scatter_complete.xls")
+
+dataset_scatter_complete$genre <-
+  gsub('hiphop', 'Hip-Hop', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('classical', 'Classical', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('dance', 'Dance', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('electronic', 'Electronic', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('r&b', 'R&B', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('metal', 'Metal', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('rock', 'Rock', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('house', 'House', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('singersongwriter', 'Singer/Songwriter', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('pop', 'Pop', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('soundtracks', 'Soundtracks', dataset_scatter_complete$genre)
+dataset_scatter_complete$genre <-
+  gsub('soulblues', 'Soul/Blues', dataset_scatter_complete$genre)
+
+# ##Scatter with all data
+# ggplot(data = dataset_scatter_complete, aes( x= gold_msi, y=valence_error, color=genre)) +
+#   geom_point() +
+#   geom_smooth(method="lm")
+
+##Small scatterplots per genre
+scatterplot2 <-
+  ggplot(data = dataset_scatter_complete,
+         aes(x = gold_msi, y = valence_error, color = genre)) +
+  geom_jitter(alpha=0.5) +
+  geom_smooth(method="lm") +
+  facet_wrap(~genre) +
+  scale_color_brewer(palette="Paired") +
+  ggtitle("The relationship between valence estimation and musicality \nper genre") +
+  coord_cartesian(xlim = c(30, 110), ylim = c(-6, 6), expand = TRUE) +
+  scale_x_continuous(name = 'Gold-MSI Total Score', breaks = c(30, 70, 110)) +
+  scale_y_continuous(name = 'Estimated Valence Error', breaks = c(-6, 0, 6)) +
+  theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (12))
+        )
+
+scatterplot2
+               
+
+```
+
+### Scatter: True Valence & Estimated Valence
+
+```{r corr true and est, fig.width=8}
+
+data_ggplot <- 
+  read_excel("data_ggplot.xlsx")
+
+scatterplot1 <-
+  ggplot(data = data_ggplot, aes( x= valence_value, y=estimate_average, color=genre)) +
+  geom_point(alpha=0.8) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~genre) +
+  ggtitle("The relationship between Spotify's valence value and the average\nestimation of each song per genre") +
+  theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (12))) + 
+  coord_cartesian(xlim = c(1, 7), ylim = c(1, 7), expand = TRUE) +
+  scale_x_continuous(name = 'True Valence', breaks = c(1, 4, 7)) +
+  scale_y_continuous(name = 'Average Estimated Valence', breaks = c(1, 4, 7)) +
+  scale_color_brewer(palette="Paired")
+
+scatterplot1
+
+```
+
+### Bar: Average Valence Estimation Deviation
+
+```{r genres data, fig.width=9}
+
+genres_data <- read_csv2("genres_results.csv")
+
+genres_data %>%
+  ggplot(aes(x = genre, y = valence_total_dev/count, fill = genre)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  scale_x_discrete(name = element_blank()) +
+  scale_y_continuous(name = 'Average Valence Deviation') +
+  scale_fill_brewer(palette="Paired") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "gray35")
+        )
+
+```
+
+Row {.tabset}
+---
+### Violin Interpretation
+Discuss the insights you can draw from the above graphs
+
+### Jitter Interpretation
+
+### Scatter Interpretation
+
+### Bar Interpretation
+
 
 Discussion
 ===
@@ -285,37 +440,17 @@ Column
 
 The present study sought to investigate the relationship between musical sophistication and valence estimation by comparing people's valence estimates against values provided by Spotify. Counter to the main hypohtesis, the results showed a weak positive relationship between musical sophistication and valence estimation inaccuracy. This indicates that musical sophistication is not a predictor of accurate perception of musical valence, and that musical sophistication might even interfere with valence perception, though this should be taken with a grain (or nugget) of salt. MISSING INFO: GENRE BREAKDOWN. MISSING INFO: CORRELATION WITH SPOTIFY'S VALUES AND DISCUSSION OF THESE RESULTS.
 
-### Correlation: Estimated Valence and True Valence
-
-This window will contain a scatterplot visualizing the correlation between each song's (average) estimated valence, and Spotify's 'true' valence values
-
 
 Column
 ---
 
-### Bar Chart: Average Valence Estimate Deviation
+### Limitations
+Discuss limitations
 
-```{r genres data, fig.width = 9}
-
-genres_data <- read_csv2("genres_results.csv")
-
-genres_data %>%
-  ggplot(aes(x = genre, y = valence_total_dev/count )) +
-  geom_col() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
-  scale_x_discrete(name = element_blank()) +
-  scale_y_continuous(name = 'Average Valence Deviation') +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "gray35")
-        )
-
-```
 
 ### Future research
 
-This window will contain advice for future research into the area of musical valence. Contents will depend on correlation with Spotify's values and (less so) on insights gained from genre breakdown.
+Discuss future research into the area
 
 Appendix
 ===
