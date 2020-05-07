@@ -118,6 +118,8 @@ data_long$genre <-
          )
   
 data_long <- data_long[order(data_long$song_ID)]
+
+
 ```
 
 ```{r valencing}
@@ -206,13 +208,13 @@ Column {.tabset}
 
 **We challenge you to beat our participants!**
 
-In this experiment demo you get to experience what our research is about in an interactive way. In the following tabs we have included short versions of the different parts in our survey.
+Grab a pen and paper! In this experiment demo you get to experience what our research is about in an interactive way. In the following tabs we have included short versions of the different parts in our survey. 
 
 First, you get to make a mini Gold-MSI test. The result places you on the musical sophistication scale. The higher your score, the more knowledge and experience you have with music.
 
 The second part consists of a few songs that we used in the survey. It is up to you to determine the valence value of each song to the best of your ability! For both the Gold-MSI test and the song estimation test, the results are on the subsequent tab.
 
-After you have determined your scores, you can see in the graph where you would have approximately been in our sample and if you have surpassed the participants. How to grade yourself is further explained on the answer tabs. Good luck!
+How to grade yourself is explained on the answer tabs. After you have determined your scores, you can see in the graph where you would have approximately been in our sample and if you have surpassed the participants. Good luck!
 
 ### Mini-MSI
 
@@ -235,15 +237,62 @@ At the peak of my interest, I practiced ___ hours per day on my primary instrume
 
 ### Musical Fragments
 
-What do you think is the valence of these four musical fragements? These values  range from 1 to 7, with 1 meaning extremely low valence, 7 - extremely high, and 4 - neither high nor low.
+What do you think is the valence of these four musical fragements? These values range from 1 to 7, with 1 meaning extremely low valence, 7 - extremely high, and 4 - neither high nor low.
+
+SongID: 40
+<audio controls>
+  <source src="40.mp3" type="audio/mp3">
+</audio>
+
+SongID: 80
+<audio controls>
+  <source src="80.mp3" type="audio/mp3">
+</audio>
+
+SongID:155
+<audio controls>
+  <source src="155.mp3" type="audio/mp3">
+</audio>
+
+SongID: 202
+<audio controls>
+  <source src="202.mp3" type="audio/mp3">
+</audio>
 
 ### Answers and Grading
 
 First, the Mini-MSI results.
 
-Each answer is worth a maximum of 7 points. For question 1, 3 and 4, the first option is worth 1 point, the second 2, ... For question 2, the scores are reversed, with the first option being worth 7 points, the second 6, ... Divide your score by 4 and multiply it by 18 to see what your score would’ve approximately been on the full test.
+Each answer is worth a maximum of 7 points. For question 1, 3 and 4, the first option is worth 1 point, the second 2 points,... For question 2, the scores are reversed, with the first option being worth 7 points, the second 6 points,... Multiply your score by 4,5 to see what your score would’ve roughly been on the full test.
 
-For the music we give the correct valence values. It is up to determine how far you were off or whether you were exactly correct. On the following tab you can view the raw data of our participants, and you can see how well they did on the songs you listened to by searching for the songs' IDs (40, 80, 155, 202) in the searchbar
+For the music we give the correct valence values. It is up to determine how far you were off or whether you were exactly correct.
+
+
+| **Song 40**:
+|   True valence: **4**
+|   Average estimate: **5,5**
+|   Times rated correct / Times tested: **1/10**
+<br>
+
+| **Song 80**:
+|   True valence: **7**
+|   Average estimate: **4,63**
+|   Times rated correct / Times tested: **0/8**
+<br>
+
+| **Song 155**:
+|   True valence: **2**
+|   Average estimate: **2,78**
+|   Times rated correct / Times tested: **4/9**
+<br>
+
+| **Song 202**:
+|   True valence: **3**
+|   Average estimate: **3,11**
+|   Times rated correct / Times tested: **3/9**
+<br>
+
+On the following tab you can view the raw data of our participants, and you can see how well they did on the songs you listened to by searching for the songs' IDs (40, 80, 155, 202) in the searchbar
 
 
 
@@ -486,6 +535,8 @@ bar <- data_long %>%
         )
 ggplotly(bar)
 
+write_csv(data_long, "data_long.csv")
+
 ```
 
 Row {.tabset}
@@ -522,11 +573,24 @@ Discussion
 Column
 ---
 
-### General conclusion 
+### General conclusion {data-height=740}
 
 The present study sought to investigate the relationship between musical sophistication and valence estimation error by comparing people's valence estimates against values provided by Spotify, while relating this to people's musical sophistication. Counter to the main hypohtesis, the results showed no negative relationship between musical sophistication and valence estimation error. This indicates that musical sophistication is not a predictor of accurate perception of musical valence. 
 
 Subsequently, we conducted exploratory research to gain insights into relationships that we initially did not hypothesize. It seems that the only genre of music where our hypothesis holds is Soul/Blues; however, since we investigated 12 genres, it is plausible that the negative relationship observed is simply a statistical fluke. More interestingly, from multiple graphs, it can be seen that fragments in the Classical, House, Dance and Soundtracks genres were overestimated by our sample. It is plausible that this might be because the valences used by Spotify in these genres are undervalued, or because participants' ratings of these fragments were confounded by some other features of the tracks. Since these insights are of an exploratory nature though, they should not be taken as concrete conclusions; rather, they should be taken as advice for future research into the topic of musical sophistication and the identification of musical features.
+
+### References and repository
+
+Frijda, N. H. (1986). The emotions. Cambridge: Cambridge University Press.
+
+International Federation of the Phonographic Industry. (2018). IFPI Global Music Report 2019. Retrieved from: https://www.ifpi.org/news/IFPI-GLOBAL-MUSIC-REPORT-2018
+
+Spotify. (2018). Spotify Technology S.A. Announces Financial Results for First Quarter 2018. Retrieved from: https://investors.spotify.com/financials/press-release-details/2018/Spotify-Technology-SA-Announces-Financial-Results-for-First-Quarter-2018/default.aspx
+
+Warriner, A. B., Kuperman, V., & Brysbaert, M. (2013). Norms of valence, arousal, and dominance for 13,915 English lemmas. Behavior research methods, 45(4), 1191-1207.
+
+
+https://github.com/knrds/everydayMusicListening
 
 
 Column
@@ -553,29 +617,7 @@ The research we conducted raises several questions which could be addressed in f
 Second, the fact that the valences of songs in the Classical, House, Dance and Soundtracks genres were systematically overvalued in our sample (if we are willing to accept the assumption that Spotify’s valence values can be regarded as true) makes one wonder about the possible causes of this empirical observation. For instance, is it difficult to assess the valence of these genres because these songs often contain no or very little vocals that convey a message? Would people rate the valences of songs differently depending on whether they contain vocals? Or, as House and Dance are genres with a relatively high tempo, might the overvaluation be linked to the tempo of the songs? These are all questions that remain to be answered yet.
 
 
-Appendix
-===
-
-Column
----
-
-### References
-
-Frijda, N. H. (1986). The emotions. Cambridge: Cambridge University Press.
-
-International Federation of the Phonographic Society. (2018). IFPI Global Music Report 2019. Retrieved from: https://www.ifpi.org/news/IFPI-GLOBAL-MUSIC-REPORT-2019
-
-Spotify. (2018). Spotify Technology S.A. Announces Financial Results for First Quarter 2018. Retrieved from: https://investors.spotify.com/financials/press-release-details/2018/Spotify-Technology-SA-Announces-Financial-Results-for-First-Quarter-2018/default.aspx
-
-Warriner, A. B., Kuperman, V., & Brysbaert, M. (2013). Norms of valence, arousal, and dominance for 13,915 English lemmas. Behavior research methods, 45(4), 1191-1207.
-
-Column
----
-
-### Downloadables
-
-https://github.com/knrds/everydayMusicListening
 
 
-Links to our GitHub repositories, and to downloadables of the data we used
+
 
