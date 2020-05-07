@@ -139,9 +139,11 @@ Main Findings {data-orientation=rows}
 Sidebar {.sidebar data-width=350}
 ---
 
+[**Study introduction**](#background)
+
 **Study abstract**
 
-The present study investigated the relationship between musical sophistication and musical valence estimation. This was done by having participants listen to a random selection of songs, representative of 12 genres, and collecting their valence estimations of each song via an R Shiny app. Musical sophistication was measured using the Gold-MSI questionnaire, and musical valence estimation was measured using a 7-point Likert scale. The results showed no negative correlation between scores on the Gold-MSI and Likert scale rating. Based on the above, we conclude that there is no relationship between musical sophistication and musical valence estimation.
+The present study investigated the relationship between musical sophistication and musical valence estimation. This was done by having participants listen to a random selection of songs, representative of 12 genres, and collecting their valence estimations of each song via an [R Shiny app](http://rezaenay.shinyapps.io/everydaymusiclistening/). Musical sophistication was measured using the Gold-MSI questionnaire, and musical valence estimation was measured using a 7-point Likert scale. The results showed no negative correlation between the two measures. Based on the above, we conclude that there is no relationship between musical sophistication and musical valence estimation.
 
 **Explanation of terms**
 
@@ -155,7 +157,7 @@ There is a negative relationship between musical sophistication and musical vale
 
 **Analysis & Results**
 
-Analysis was conducted using R's built-in cor.test() function, running a Pearson's product-moment correlation.
+Analysis was conducted using R's built-in cor.test() function, running a one-sided bivariate correlation.
 
 Correlation: Gold-MSI & Valence Estimation Error 
 
@@ -174,8 +176,6 @@ Column
 
 ```{r mainplot, fig.width = 8}
 
-mainplot_corr <- cor.test(part_data_wide$MSI_total, part_data_wide$ValOff_total, "less")
-
 options(repr.plot.width=800, repr.plot.height=500)
 mainplot <- part_data_wide %>%
   ggplot(aes(x = MSI_total, y = ValOff_total/25)) +
@@ -188,7 +188,7 @@ mainplot <- part_data_wide %>%
                        ),
          geom="text", size=5) +
   scale_x_continuous(name = 'Gold-MSI Score') +
-  scale_y_continuous(name = 'Average Valence Estimation Error') +
+  scale_y_continuous(name = 'Average Estimated Valence Error') +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
@@ -204,23 +204,46 @@ Column {.tabset}
 
 ### Interactive Experiment: Intro
 
-We challenge you to beat our participants! In this experiment demo you get to experience what our research is about in an interactive way. In the following tabs we have included short versions of the different parts in our survey.
+**We challenge you to beat our participants!**
+
+In this experiment demo you get to experience what our research is about in an interactive way. In the following tabs we have included short versions of the different parts in our survey.
+
 First, you get to make a mini Gold-MSI test. The result places you on the musical sophistication scale. The higher your score, the more knowledge and experience you have with music.
+
 The second part consists of a few songs that we used in the survey. It is up to you to determine the valence value of each song to the best of your ability! For both the Gold-MSI test and the song estimation test, the results are on the subsequent tab.
+
 After you have determined your scores, you can see in the graph where you would have approximately been in our sample and if you have surpassed the participants. How to grade yourself is further explained on the answer tabs. Good luck!
 
 ### Mini-MSI
 
-Following are a few statements to approximate your musical sophistication. The first four are statements that you are meant to be answering with a value ranging from 1 to 7, 1 meaning you completely disagree, 7 that you completely agree and 4 neither agree nor disagree. For the last question you have to choose one of the options given below it.
+I spend a lot of my free time doing music-related activities.
+
+1 --- 2 --- 3 --- 4 --- 5 --- 6 --- 7 
+
+I can compare and discuss differences between two performances or versions of the same piece of music.
+
+1 --- 2 --- 3 --- 4 --- 5 --- 6 --- 7 
+
+When I sing, I have no idea whether I'm in tune or not.
+
+1 --- 2 --- 3 --- 4 --- 5 --- 6 --- 7 
+
+At the peak of my interest, I practiced ___ hours per day on my primary instrument.
+
+0 --- 0.5 --- 1 --- 1.5 --- 2 --- 3-4 --- 5 or more
+
 
 ### Musical Fragments
 
-Listen to the following 4 music fragments and estimate the valence value you think corresponds to each fragment. These values also range from 1 to 7, with 1 meaning extremely low valence, 7 - extremely high, and 4 - neither high nor low.
+What do you think is the valence of these four musical fragements? These values  range from 1 to 7, with 1 meaning extremely low valence, 7 - extremely high, and 4 - neither high nor low.
 
 ### Answers and Grading
 
-First, the Mini-MSI results. Each answer is worth a maximum of 7 points. If the points are allocated in an ascending order, then the answer 7 is worth 7 points and 1 is worth 1 point. If points are allocated in a descending order, then it is exactly the other way around. For the last question it depends on which option you chose. The first option is worth 1 point, the second 2 points and the last 7 points. Divide your score by 5 and multiply it by 18 to see what your score would’ve approximately been on the full test.
-For the music we give the correct valence values. It is up to determine how far you were off or whether you were exactly correct. On the following tab we give you the results from our participants on these specific songs.
+First, the Mini-MSI results.
+
+Each answer is worth a maximum of 7 points. For question 1, 3 and 4, the first option is worth 1 point, the second 2, ... For question 2, the scores are reversed, with the first option being worth 7 points, the second 6, ... Divide your score by 4 and multiply it by 18 to see what your score would’ve approximately been on the full test.
+
+For the music we give the correct valence values. It is up to determine how far you were off or whether you were exactly correct. On the following tab you can view the raw data of our participants, and you can see how well they did on the songs you listened to by searching for the songs' IDs (40, 80, 155, 202) in the searchbar
 
 
 
@@ -247,9 +270,9 @@ To fill this gap in the literature, we decided to investigate the following rese
 
 raw_data <- read_excel("dataset_scatter_complete.xls")
 
-DT::datatable(raw_data, options = list(
-  bPaginate = FALSE
-))
+raw_data <- raw_data[, -c(1, 2)]
+
+DT::datatable(raw_data, options = list(bPaginate = FALSE), rownames = FALSE)
 
 ```
 
@@ -280,7 +303,7 @@ In total, 242 songs were used in this experiment.
 
 Two songs were the same for each participant, namely the trial round songs. These were selected to help participants better conceptualize musical valence. The first song had an extremely high valence value (7), whereas the second song was closer to the middle of the scale and had a slightly low value (3).
 
-The selection process for the other 240 songs began with a breakdown of musical genres - we chose 12 genres based on a survey that was conducted using a sample of 19000 people between the age of 16-64, measuring the 12 most consumed genres of music in the U.S. (REFERENCE). For each genre 20 songs were selected making use of the website ‘rateyourmusic.com’, where albums can be sorted by their average user-submitted rating, by genre. We sampled songs from these highly-rated albums, working under the assumption that well-regarded albums in a given genre are the most representative of said genre. Each sample of songs contained  only one song per artist, in a given genre.
+The selection process for the other 240 songs began with a breakdown of musical genres - we chose 12 genres based on a survey that was conducted using a sample of 19000 people between the age of 16-64, measuring the 12 most consumed genres of music in 18 countries. (IFPI, 2018). For each genre 20 songs were selected making use of the website ‘rateyourmusic.com’, where albums can be sorted by their average user-submitted rating, by genre. We sampled songs from these highly-rated albums, working under the assumption that well-regarded albums in a given genre are the most representative of said genre. Each sample of songs contained  only one song per artist, in a given genre.
 
 During the selection process, we also took note of the valence of the sampled songs. We made sure that - per genre - no valence value was overrepresented or underrepresented, given what is usual for a specific genre; e. g., if a genre is generally characterized as having songs with higher valence, the song pool for said genre would be skewed towards, on average, higher values as well (compared to a song pool of a genre that is characterized as having lower valence songs).
 
@@ -296,14 +319,20 @@ Exploration {data-orientation=rows}
 
 Sidebar {.sidebar data-width=300}
 ---
-Text about how this is exploratory research, and how **hard** conclusions cannot be drawn from these graphs, but how they nevertheless can guide future research.
+Having answered our main research question, we decided to engage in some exploratory research. On this page, we present 4 exploratory analyses and their appropriate interpretations. Of the things that we chose to analyze, we were particularly interested in: 
 
-Plus, some info on the different types of graphs
+a) the density of valence estimation error per genre;
+
+b) our main analysis dissected by genre; 
+
+c) the relationship between Spotify's and our participants' valence ratings; 
+
+d) how over/underestimated each genre was.
 
 
 Row {.tabset data-height=600}
 ---
-### Violin: Valence Estimation Deviation Density
+### Violin: Valence Estimation Error Density
 
 ```{r violin plots, fig.width=12}
 
@@ -315,7 +344,8 @@ genre_statistics <-
   summarise(
     meanTruVal=mean(truVal),
     signValEstSD=sd(signValDev),
-    corrs=cor(truVal, estVal)
+    corrs=cor(truVal, estVal),
+    corrsMSI=cor(MSI_TOTAL, signValDev)
     )
 
 data_long %>%
@@ -323,7 +353,7 @@ data_long %>%
   geom_violin() +
   geom_boxplot(width=0.1) +
   geom_hline(yintercept=0, linetype="dashed", color = "gray90") +
-  scale_y_continuous(name = "Valence Estimate Deviation", limits = c(-6, 6)) +
+  scale_y_continuous(name = "Estimated Valence Error", limits = c(-6, 6)) +
   scale_x_discrete(name = element_blank()) +
   scale_color_brewer(palette="Paired") +
   theme(panel.grid.major = element_blank(),
@@ -379,6 +409,12 @@ scatterplot2 <-
   geom_jitter(alpha=0.8) +
   geom_smooth(method="lm") +
   facet_wrap(~genre) +
+  geom_text(data=genre_statistics,
+          aes(label = paste("r = ", round(corrsMSI, 2), sep="")),
+          x=95,
+          y=-5.25,
+          size=2.5,
+          color="black") +
   scale_color_brewer(palette="Paired") +
   ggtitle("The relationship between valence estimation and musicality \nper genre") +
   coord_cartesian(xlim = c(30, 110), ylim = c(-6, 6), expand = TRUE) +
@@ -427,12 +463,13 @@ scatter
 
 ```
 
-### Bar: Average Valence Estimation Deviation
+### Bar: Total Estimated Valence Error by Genre
 
-```{r genres data, fig.width=8}
+```{r genres data, fig.width=7}
 
-genres_data <- read_csv2("genres_results.csv")
-  
+COUNTS <- data_long %>%
+	group_by(genre) %>%
+	summarise(signValDev = n())
 
 bar <- data_long %>%
   ggplot(aes(x = genre, y = signValDev, fill = signValDevFact)) +
@@ -454,25 +491,29 @@ ggplotly(bar)
 Row {.tabset}
 ---
 ### Violin Interpretation
-The violin graph plots the 12 genres against the average valence estimation deviation (i.e. the average of difference between what participants estimated and Spotify’s true valence). This plot consists of two parts: one is the box plot, the other is the ‘violin’. From the box plot we can see the minimum and maximum values, as well as the first quantile, median and third quantile. The thickness of the violin indicates the number of observations for a particular valence deviation.
+The violin graphs depict the density of estimated valence error responses per genre. This plot consists of two parts: one is the box plot, the other is the ‘violin’. From the box plot we can see the minimum and maximum responses, as well as the first quartile, median and third quantile. The thickness of the violin indicates the number of observations for a particular valence deviation.
 
 From this graph we can deduct whether the valences in particular genres were systematically being over- or underestimated by participants. We see that for five genres this is not the case: Electronic, Hip-Hop, Pop, R&B and Singer/Songwriter all have a median of 0. For the other genres however, the medians range from -1 to +2. The most significant being Dance and House with an average of two points estimated above the true valence. For Soundtracks we see that the first quantile and median are equal to +1, but the third quantile is +4.
 
 ### Jitter Interpretation
 
-In this jitter plot, the valence estimation error (i.e. the difference between the true valence and a participant’s estimation) is plotted against the Gold-MSI score and grouped per music genre. The estimation error can both be positive as well as negative, making it possible to explore whether some genres are systematically overvalued or undervalued. In addition, we made use of linear regression to investigate the potential relationship between the dependent and independent variable per genre. It is important to note that, as opposed to the plot on the main page, every dot in this graph represents one attempt of estimating the valence, not one participant. Because this means that we have multiple observations per MSI-value, the command geom_jitter() was used to avoid a straight line of points and make the graph more intuitive to interpret.
+In this jitter plot, the valence estimation error (i.e. the difference between the true valence and a participant’s estimation) is plotted against the Gold-MSI score and grouped per music genre. We made use of linear regression to investigate the potential relationship between the dependent and independent variable per genre. It is important to note that, as opposed to the plot on the main page, every dot in this graph represents one attempt of estimating the valence, not one participant. Because this means that we have multiple observations per MSI-value, the command geom_jitter() was used to avoid a straight line of points and make the graph more intuitive to interpret.
 
 As becomes evident from looking at the graph, there seems to be no significant negative relationship between the valence estimation error and musical sophistication for any music genre like we hypothesized. Only the fitted lines for the genres pop, soul/blues and R&B show a very small negative slope. In fact, the genres hip-hop, rock and house even display a small positive relationship. Another interesting finding is that the genres house, dance and soundtracks seem to be systematically overvalued, as indicated by the fitted lines well above 0. This is in accordance with the findings from the violin plot and constitutes an interesting topic for further research.
 
 
 ### Scatter Interpretation
 
-As can be seen, some of the genres have similar graphs, but overall, the graphs differ much from each other. A single graph in which all genres are included would not lead to a concise result, therefore we opted for genre-specific graphs. For most genres there is a positive trend, which is most accurately shown by the data for R&B and Singer-Songwriter. Another noteworthy result is that for Dance and House the lower valence values are overestimated on average, for Metal the higher valence values are underestimated on average. For Electronic, Hip-Hop and Rock most average estimates are around the central value, which indicates that for these genres the positivity-grade is not clearly distinguishable.
+As can be seen, some of the genres have similar graphs, but overall, the graphs differ much from each other. A single graph in which all genres are included would not lead to a concise result, therefore we opted for genre-specific graphs. For most genres there is a positive trend, which is most accurately shown by the data for R&B and Singer-Songwriter. Another noteworthy result is that for Dance and House the lower valence values are overestimated on average, for Metal the higher valence values are underestimated on average. For Electronic, Hip-Hop and Rock most average estimates are around the central value, which either indicated a central tendency response pattern, or  that for these genres the positivity-grade is not clearly distinguishable.
 
 What also can be seen is that for most genres, songs with extreme-valued valences, so 1 or 7, are not recognized by all participants the song was tested on. These results raise the question whether the valence values determined by Spotify are actually representative for the valence or positivity it evokes in people. The Soundtracks graph raises the same question, because Spotify determined all but one track to have valence value 1 or 2, but the on average judgement by the participants is very spread out.  
 
 
 ### Bar Interpretation
+
+The bar charts depict the total valence error per genre. The bars are centered around 0, so it is possible to evidently see whether a genre is generally over- or underestimated. Each 'slice' in a bar represents an observation of a song in that genre. Moreover, The bars are colored by the estimated valence error, and the thickness of each 'slice' correspons to this error, e. g., if a song in the Rock genre was overvalued by 5, then the song's 'slice' is placed in the positive half of the column and has a thickness of 5 units. This means that if an observation was correct, i. e., had an error value of 0, then that slice is not depicted in the graph - this makes it easier to visually inspect whether a genre is generally over- or underestimated.
+
+In accordance with the violin and jitter plots, it seems that songs in the Classical, Dance, House and Soundtracks genres were systematically overestimated. Furthermore, a valence error of 4-6 comprised an evidently larger part of the Classical, Dance, House and Soundtracks genres. When looking at both the scatterplot and bar chart, this suggests that Classical and Soundtracks are underestimated by Spotify, and that Dance and House are overestimated by people (this might be due to the energetic nature of songs in these genres).
 
 
 Discussion
@@ -483,19 +524,34 @@ Column
 
 ### General conclusion 
 
-The present study sought to investigate the relationship between musical sophistication and valence estimation by comparing people's valence estimates against values provided by Spotify. Counter to the main hypohtesis, the results showed a weak positive relationship between musical sophistication and valence estimation inaccuracy. This indicates that musical sophistication is not a predictor of accurate perception of musical valence, and that musical sophistication might even interfere with valence perception, though this should be taken with a grain (or nugget) of salt. MISSING INFO: GENRE BREAKDOWN. MISSING INFO: CORRELATION WITH SPOTIFY'S VALUES AND DISCUSSION OF THESE RESULTS.
+The present study sought to investigate the relationship between musical sophistication and valence estimation error by comparing people's valence estimates against values provided by Spotify, while relating this to people's musical sophistication. Counter to the main hypohtesis, the results showed no negative relationship between musical sophistication and valence estimation error. This indicates that musical sophistication is not a predictor of accurate perception of musical valence. 
+
+Subsequently, we conducted exploratory research to gain insights into relationships that we initially did not hypothesize. It seems that the only genre of music where our hypothesis holds is Soul/Blues; however, since we investigated 12 genres, it is plausible that the negative relationship observed is simply a statistical fluke. More interestingly, from multiple graphs, it can be seen that fragments in the Classical, House, Dance and Soundtracks genres were overestimated by our sample. It is plausible that this might be because the valences used by Spotify in these genres are undervalued, or because participants' ratings of these fragments were confounded by some other features of the tracks. Since these insights are of an exploratory nature though, they should not be taken as concrete conclusions; rather, they should be taken as advice for future research into the topic of musical sophistication and the identification of musical features.
 
 
 Column
 ---
 
 ### Limitations
-Discuss limitations
+**Sample size**
+
+Our survey was completed by 42 participants. Because of the randomized and unique set of fragments that each participant listened to, this means that some of the fragments had relatively few observations, with 3 tracks having no observations entirely. While this does not influence the main analysis (as each participant's average score was used there), this does influence the relationship between songs' true valences provided and their estimated valences, as some of the datapoints in the graph plotting this relationship had nine observations, whereas some only had one.
+
+**Survey limitations**
+
+Musical fragments were only played once when participants took the survey. Because of this, if a participant failed to attend to a given fragment, they still had to rate its' valence with the limited insight they had. Furthermore, after receiving feedback from some participants, we realized that not all of the fragments were of an equal volume, and that some of the participants changed the volume multiple times during the survey - this also could have interfered with participants' attentiveness during the survey. This means that some of the valence ratings could have been different, and maybe even more accurate, if participants had had the capability to replay songs.
+
+**Sample representativeness**
+
+Our sample mainly consisted of undergraduates studying in the Netherlands. This likely only forms a particular subset of the sample that Spotify utilizes for computing the various track features it offers, including valence. Therefore, if we had utilized a sample represenatitive of the population that uses Spotify (and not a subset of it), it's plausible that the valence estimates we observed would be more in line with those provided by Spotify.
 
 
 ### Future research
 
-Discuss future research into the area
+The research we conducted raises several questions which could be addressed in further academic research. First of all, it would be of particular interest to verify whether our finding that musically sophisticated individuals are no better at estimating the valence of a song holds for other music features as well. It would also be interesting to find out how our conclusion changes if more objectively measurable features of music were used, such as key, mode (major vs. minor) or tempo. If the results of such research would correspond to our findings, this would imply more everyday music exposure does not make us better at identifying music characteristics in any way.
+
+Second, the fact that the valences of songs in the Classical, House, Dance and Soundtracks genres were systematically overvalued in our sample (if we are willing to accept the assumption that Spotify’s valence values can be regarded as true) makes one wonder about the possible causes of this empirical observation. For instance, is it difficult to assess the valence of these genres because these songs often contain no or very little vocals that convey a message? Would people rate the valences of songs differently depending on whether they contain vocals? Or, as House and Dance are genres with a relatively high tempo, might the overvaluation be linked to the tempo of the songs? These are all questions that remain to be answered yet.
+
 
 Appendix
 ===
@@ -517,6 +573,9 @@ Column
 ---
 
 ### Downloadables
+
+https://github.com/knrds/everydayMusicListening
+
 
 Links to our GitHub repositories, and to downloadables of the data we used
 
