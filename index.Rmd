@@ -514,11 +514,7 @@ scatter
 
 ### Bar: Total Estimated Valence Error by Genre
 
-```{r genres data, fig.width=7}
-
-COUNTS <- data_long %>%
-	group_by(genre) %>%
-	summarise(signValDev = n())
+```{r genres data, fig.width=6}
 
 bar <- data_long %>%
   ggplot(aes(x = genre, y = signValDev, fill = signValDevFact)) +
@@ -527,7 +523,7 @@ bar <- data_long %>%
   ggtitle("The total valence deviations per genre") +
   scale_x_discrete(name = "") +
   scale_y_continuous(name = 'Valence Deviation Total') +
-  scale_fill_discrete(name="Valence Error") +
+  scale_fill_discrete(name="") +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
