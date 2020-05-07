@@ -17,6 +17,7 @@ library(reshape2)
 library(data.table)
 library(varhandle)
 library(readxl)
+library(dplyr)
 ```
 
 
@@ -210,9 +211,17 @@ After you have determined your scores, you can see in the graph where you would 
 
 ### Mini-MSI
 
+Following are a few statements to approximate your musical sophistication. The first four are statements that you are meant to be answering with a value ranging from 1 to 7, 1 meaning you completely disagree, 7 that you completely agree and 4 neither agree nor disagree. For the last question you have to choose one of the options given below it.
+
 ### Musical Fragments
 
+Listen to the following 4 music fragments and estimate the valence value you think corresponds to each fragment. These values also range from 1 to 7, with 1 meaning extremely low valence, 7 - extremely high, and 4 - neither high nor low.
+
 ### Answers and Grading
+
+First, the Mini-MSI results. Each answer is worth a maximum of 7 points. If the points are allocated in an ascending order, then the answer 7 is worth 7 points and 1 is worth 1 point. If points are allocated in a descending order, then it is exactly the other way around. For the last question it depends on which option you chose. The first option is worth 1 point, the second 2 points and the last 7 points. Divide your score by 5 and multiply it by 18 to see what your score would’ve approximately been on the full test.
+For the music we give the correct valence values. It is up to determine how far you were off or whether you were exactly correct. On the following tab we give you the results from our participants on these specific songs.
+
 
 
 Background
@@ -236,7 +245,9 @@ To fill this gap in the literature, we decided to investigate the following rese
 
 ```{r raw data}
 
-DT::datatable(data_wide, options = list(
+raw_data <- read_excel("dataset_scatter_complete.xls")
+
+DT::datatable(raw_data, options = list(
   bPaginate = FALSE
 ))
 
@@ -298,11 +309,13 @@ Row {.tabset data-height=600}
 
 data_long$signValDevFact <- as.factor(as.numeric(data_long$signValDev))
 
-genre_statistics <- data_long %>%
+genre_statistics <-
+  data_long %>%
   group_by(genre) %>%
   summarise(
     meanTruVal=mean(truVal),
-    signValEstSD=sd(signValDev)
+    signValEstSD=sd(signValDev),
+    corrs=cor(truVal, estVal)
     )
 
 data_long %>%
@@ -363,7 +376,7 @@ dataset_scatter_complete$genre <-
 scatterplot2 <-
   ggplot(data = dataset_scatter_complete,
          aes(x = gold_msi, y = valence_error, color = genre)) +
-  geom_jitter(alpha=0.5) +
+  geom_jitter(alpha=0.8) +
   geom_smooth(method="lm") +
   facet_wrap(~genre) +
   scale_color_brewer(palette="Paired") +
@@ -386,40 +399,55 @@ scatterplot2
 data_ggplot <- 
   read_excel("data_ggplot.xlsx")
 
-scatterplot1 <-
-  ggplot(data = data_ggplot, aes( x= valence_value, y=estimate_average, color=genre)) +
+data_ggplot$genre <-
+  gsub('Singer-Songwriter', 'Singer/Songwriter', data_ggplot$genre)
+
+data_ggplot2 <- 
+  data_ggplot[!(is.na(data_ggplot$estimate_average) | data_ggplot$estimate_average==""), ]
+
+scatter <-
+  ggplot(data = data_ggplot2, aes( x= valence_value, y=estimate_average, color=genre)) +
   geom_point(alpha=0.8) +
   geom_smooth(method = "lm") +
+  scale_color_brewer(palette="Paired") +
   facet_wrap(~genre) +
+  geom_text(data=genre_statistics,
+            aes(label = paste("r = ", round(corrs, 2), sep="")),
+            x=6,
+            y=1.5,
+            size=2.5,
+            color="black") +
   ggtitle("The relationship between Spotify's valence value and the average\nestimation of each song per genre") +
   theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (12))) + 
   coord_cartesian(xlim = c(1, 7), ylim = c(1, 7), expand = TRUE) +
   scale_x_continuous(name = 'True Valence', breaks = c(1, 4, 7)) +
-  scale_y_continuous(name = 'Average Estimated Valence', breaks = c(1, 4, 7)) +
-  scale_color_brewer(palette="Paired")
+  scale_y_continuous(name = 'Average Estimated Valence', breaks = c(1, 4, 7))
 
-scatterplot1
+scatter
 
 ```
 
 ### Bar: Average Valence Estimation Deviation
 
-```{r genres data, fig.width=10}
+```{r genres data, fig.width=8}
 
 genres_data <- read_csv2("genres_results.csv")
   
 
-data_long %>%
+bar <- data_long %>%
   ggplot(aes(x = genre, y = signValDev, fill = signValDevFact)) +
   geom_col() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
-  scale_x_discrete(name = element_blank()) +
-  scale_y_continuous(name = 'Valence Deviation Count') +
+  ggtitle("The total valence deviations per genre") +
+  scale_x_discrete(name = "") +
+  scale_y_continuous(name = 'Valence Deviation Total') +
+  scale_fill_discrete(name="Valence Error") +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         axis.line = element_line(colour = "gray35")
         )
+ggplotly(bar)
 
 ```
 
@@ -432,9 +460,14 @@ From this graph we can deduct whether the valences in particular genres were sys
 
 ### Jitter Interpretation
 
+In this jitter plot, the valence estimation error (i.e. the difference between the true valence and a participant’s estimation) is plotted against the Gold-MSI score and grouped per music genre. The estimation error can both be positive as well as negative, making it possible to explore whether some genres are systematically overvalued or undervalued. In addition, we made use of linear regression to investigate the potential relationship between the dependent and independent variable per genre. It is important to note that, as opposed to the plot on the main page, every dot in this graph represents one attempt of estimating the valence, not one participant. Because this means that we have multiple observations per MSI-value, the command geom_jitter() was used to avoid a straight line of points and make the graph more intuitive to interpret.
+
+As becomes evident from looking at the graph, there seems to be no significant negative relationship between the valence estimation error and musical sophistication for any music genre like we hypothesized. Only the fitted lines for the genres pop, soul/blues and R&B show a very small negative slope. In fact, the genres hip-hop, rock and house even display a small positive relationship. Another interesting finding is that the genres house, dance and soundtracks seem to be systematically overvalued, as indicated by the fitted lines well above 0. This is in accordance with the findings from the violin plot and constitutes an interesting topic for further research.
+
+
 ### Scatter Interpretation
 
-As you can see, some genres have similar graphs, but overall the graphs differ much from each other. A single graph in which all genres are included would not lead to a concise result. However, the graphs do show pretty interesting genre specific results. For most genres there is a positive trend, which is most accurately shown by the data for R&B and Singer-Songwriter. Another noteworthy result is that for Dance and House the lower valence values are overestimated on average, for Metal the higher valence values are underestimated on average. For Electronic, Hip-Hop and Rock most average estimates are around the central value, which indicates that for these genres the positivity-grade is not clearly distinguishable.
+As can be seen, some of the genres have similar graphs, but overall, the graphs differ much from each other. A single graph in which all genres are included would not lead to a concise result, therefore we opted for genre-specific graphs. For most genres there is a positive trend, which is most accurately shown by the data for R&B and Singer-Songwriter. Another noteworthy result is that for Dance and House the lower valence values are overestimated on average, for Metal the higher valence values are underestimated on average. For Electronic, Hip-Hop and Rock most average estimates are around the central value, which indicates that for these genres the positivity-grade is not clearly distinguishable.
 
 What also can be seen is that for most genres, songs with extreme-valued valences, so 1 or 7, are not recognized by all participants the song was tested on. These results raise the question whether the valence values determined by Spotify are actually representative for the valence or positivity it evokes in people. The Soundtracks graph raises the same question, because Spotify determined all but one track to have valence value 1 or 2, but the on average judgement by the participants is very spread out.  
 
